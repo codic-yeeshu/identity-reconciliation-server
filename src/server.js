@@ -2,6 +2,7 @@ import express from "express";
 import { configDotenv } from "dotenv";
 import cors from "cors";
 import identifyUser from "./routes/identifyUser.js";
+import user from "./routes/user.js";
 import { connectDB } from "./config/db.js";
 
 configDotenv();
@@ -15,6 +16,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/identify", identifyUser);
+app.use("/getAllUser", user);
 
 connectDB().then(() => {
   app.listen(PORT, () => {

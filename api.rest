@@ -1,0 +1,117 @@
+### API Tests for Contact Identity Service
+# ###################### INSTALL REST CLIENT to directly send response from here ##################
+@baseUrl = identity-reconciliation-server-api.onrender.com
+# @baseUrl = http://localhost:1001
+
+### for testing 
+
+GET {{baseUrl}}/getAllUser
+Content-Type: application/json
+
+
+### 1. Create New Primary Contact
+POST {{baseUrl}}/identify
+Content-Type: application/json
+
+{
+    "email": "lorraine@hillvalley.edu",
+    "phoneNumber": "123456"
+}
+
+### 2. Add Secondary Contact with Same Phone
+POST {{baseUrl}}/identify
+Content-Type: application/json
+
+{
+    "email": "mcfly@hillvalley.edu",
+    "phoneNumber": "123456"
+}
+
+### 3. Query by Email Only
+POST {{baseUrl}}/identify
+Content-Type: application/json
+
+{
+    "email": "lorraine@hillvalley.edu"
+}
+
+### 4. Query by Phone Only
+POST {{baseUrl}}/identify
+Content-Type: application/json
+
+{
+    "phoneNumber": "123456"
+}
+
+### 5. Create Another Primary Contact
+POST {{baseUrl}}/identify
+Content-Type: application/json
+
+{
+    "email": "george@hillvalley.edu",
+    "phoneNumber": "919191"
+}
+
+### 6. Link Two Primary Contacts (converts newer to secondary)
+POST {{baseUrl}}/identify
+Content-Type: application/json
+
+{
+    "email": "george@hillvalley.edu",
+    "phoneNumber": "123456"
+}
+
+### 7. Invalid Request (no email or phone)
+POST {{baseUrl}}/identify
+Content-Type: application/json
+
+{
+}
+
+### 8. New Contact with New Information
+POST {{baseUrl}}/identify
+Content-Type: application/json
+
+{
+    "email": "doc@hillvalley.edu",
+    "phoneNumber": "888888"
+}
+
+### 9. Complex Linking Scenario
+# First create separate primary contacts
+POST {{baseUrl}}/identify
+Content-Type: application/json
+
+{
+    "email": "biff@hillvalley.edu",
+    "phoneNumber": "555555"
+}
+
+###
+# Then link them through a common contact
+POST {{baseUrl}}/identify
+Content-Type: application/json
+
+{
+    "email": "biff@hillvalley.edu",
+    "phoneNumber": "123456"
+}
+
+### 10. Multiple Secondary Contacts
+POST {{baseUrl}}/identify
+Content-Type: application/json
+
+{
+    "email": "marty.mcfly@hillvalley.edu",
+    "phoneNumber": "123456"
+}
+
+### Expected Response Format for Reference:
+# {
+#   "contact": {
+#     "primaryContatctId": 1,
+#     "emails": ["lorraine@hillvalley.edu", "mcfly@hillvalley.edu"],
+#     "phoneNumbers": ["123456"],
+#     "secondaryContactIds": [2]
+#   }
+# }
