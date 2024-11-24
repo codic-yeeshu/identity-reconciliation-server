@@ -44,6 +44,29 @@ export const identifyUserController = async (req, res) => {
         },
       });
     }
+
+    let primaryContact = existingContacts.find(
+      (contact) => contact.linkPrecedence === "primary"
+    );
+
+    const hasNewInfo =
+      (email && !existingContacts.some((c) => c.email === email)) ||
+      (phoneNumber &&
+        !existingContacts.some(
+          (c) => c.phoneNumber === phoneNumber.toString()
+        ));
+
+    if (hasNewInfo) {
+      // Create new secondary contact
+      await prisma.user.create({
+        data: {
+          email,
+          phoneNumber: phoneNumber?.toString(),
+          linkedId: primaryContact.id,
+          linkPrecedence: "secondary",
+        },
+      });
+    }
   } catch (error) {
     console.error("Error in identifyUserController:", error);
     return res.status(500).json({ error: "Internal server error" });
