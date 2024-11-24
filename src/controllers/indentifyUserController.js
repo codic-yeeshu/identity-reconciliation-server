@@ -67,6 +67,26 @@ export const identifyUserController = async (req, res) => {
         },
       });
     }
+
+    // Update any primary contacts to be secondary if they're not the oldest
+    const contactsToUpdate = existingContacts.filter(
+      (contact) =>
+        contact.id !== primaryContact.id && contact.linkPrecedence === "primary"
+    );
+
+    if (contactsToUpdate.length > 0) {
+      await prisma.user.updateMany({
+        where: {
+          id: {
+            in: contactsToUpdate.map((c) => c.id),
+          },
+        },
+        data: {
+          linkPrecedence: "secondary",
+          linkedId: primaryContact.id,
+        },
+      });
+    }
   } catch (error) {
     console.error("Error in identifyUserController:", error);
     return res.status(500).json({ error: "Internal server error" });
