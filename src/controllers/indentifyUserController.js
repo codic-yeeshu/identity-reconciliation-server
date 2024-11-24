@@ -87,6 +87,31 @@ export const identifyUserController = async (req, res) => {
         },
       });
     }
+
+    // Get all related contacts after updates
+    const allRelatedContacts = await prisma.user.findMany({
+      where: {
+        OR: [{ id: primaryContact.id }, { linkedId: primaryContact.id }],
+      },
+    });
+
+    // Prepare response
+    const responseData = {
+      contact: {
+        primaryContatctId: primaryContact.id,
+        emails: allRelatedContacts
+          .map((contact) => contact.email)
+          .filter((email) => email != undefined),
+        phoneNumbers: allRelatedContacts
+          .map((contact) => contact.phoneNumber)
+          .filter((phone) => phone != undefined),
+        secondaryContactIds: allRelatedContacts
+          .filter((contact) => contact.id !== primaryContact.id)
+          .map((contact) => contact.id),
+      },
+    };
+
+    return res.status(200).json(responseData);
   } catch (error) {
     console.error("Error in identifyUserController:", error);
     return res.status(500).json({ error: "Internal server error" });
