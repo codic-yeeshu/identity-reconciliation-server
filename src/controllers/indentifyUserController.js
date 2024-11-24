@@ -49,24 +49,15 @@ export const identifyUserController = async (req, res) => {
       (contact) => contact.linkPrecedence === "primary"
     );
 
-    const hasNewInfo =
-      (email && !existingContacts.some((c) => c.email === email)) ||
-      (phoneNumber &&
-        !existingContacts.some(
-          (c) => c.phoneNumber === phoneNumber.toString()
-        ));
-
-    if (hasNewInfo) {
-      // Create new secondary contact
-      await prisma.user.create({
-        data: {
-          email,
-          phoneNumber: phoneNumber?.toString(),
-          linkedId: primaryContact.id,
-          linkPrecedence: "secondary",
-        },
-      });
-    }
+    // Create new secondary contact
+    await prisma.user.create({
+      data: {
+        email,
+        phoneNumber: phoneNumber?.toString(),
+        linkedId: primaryContact.id,
+        linkPrecedence: "secondary",
+      },
+    });
 
     // Update any primary contacts to be secondary if they're not the oldest
     const contactsToUpdate = existingContacts.filter(
