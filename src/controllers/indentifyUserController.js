@@ -1,7 +1,18 @@
 import { prisma } from "../config/db.js";
 
 export const identifyUserController = async (req, res) => {
-  res.send("Request Received");
+  const { email, phoneNumber } = req.body;
+  try {
+    // Input validation
+    if (!email && !phoneNumber) {
+      return res
+        .status(400)
+        .json({ error: "Either email or phoneNumber is required" });
+    }
+  } catch (error) {
+    console.error("Error in identifyUserController:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 // just for testing purpose
