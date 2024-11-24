@@ -28,7 +28,7 @@ app.get("/keep-alive", (req, res) => {
 // Function to call the keep-alive endpoint
 const keepServerAlive = async () => {
   try {
-    const url = `identity-reconciliation-server-api.onrender.com/keep-alive`;
+    const url = `https://identity-reconciliation-server-api.onrender.com/keep-alive`;
     await axios.get(url);
     console.log(`Keep-alive ping sent to ${url}`);
   } catch (error) {
